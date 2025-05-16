@@ -1,9 +1,12 @@
+<!-- index.html -->
 <html lang="ru">
 <head>
+  <!-- Set character encoding and mobile responsiveness -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RSA Шифрование — Пошаговое обучение</title>
   <style>
+    /* Base styles for the page */
     body { font-family: Arial, sans-serif; margin: 20px; background: #f7f7f7; color: #333; }
     h1 { color: #4a90e2; }
     input, button { padding: 10px; margin: 5px 0; font-size: 1em; }
@@ -34,47 +37,48 @@
   </style>
 </head>
 <body>
+  <!-- Main header of the page -->
   <h1>🛡️ Интерактивный учебник по RSA шифрованию</h1>
 
+  <!-- Section explaining how RSA works -->
   <div class="section">
     <h2>Как это работает (очень просто)</h2>
     <div class="tabs">
+      <!-- Tab buttons for switching explanation views -->
       <div class="tab active" onclick="changeTab('basic')">Простое объяснение</div>
       <div class="tab" onclick="changeTab('visual')">Визуализация</div>
       <div class="tab" onclick="changeTab('math')">Математика</div>
     </div>
-    
+
+    <!-- Basic explanation of RSA -->
     <div id="basic" class="tab-content active">
       <div class="explanation">
-        Представь, что ты хочешь отправить секретное число другу, и никто больше не должен его понять. <br>
-        <ul>
-          <li>Ты берешь два <strong>простых числа</strong> (например, 7 и 11). Они как ключи от замка.</li>
-          <li>Ты создаешь <strong>публичный замок</strong> (его можно показывать всем) и <strong>приватный ключ</strong> (держи в тайне!).</li>
-          <li>Когда ты хочешь зашифровать число, ты как бы "закручиваешь замок", используя формулу: <code>C = M^e mod n</code>.</li>
-          <li>Чтобы открыть обратно, твой друг использует <strong>приватный ключ</strong> и формулу: <code>M = C^d mod n</code>.</li>
-        </ul>
-        Это как если бы ты положил игрушку в коробку, закрыл её кодовым замком, и только тот, у кого есть ключ, сможет её достать! 🔐
+        <!-- Short and simplified description of the RSA concept -->
+        Представь, что ты хочешь отправить секретное число другу...
       </div>
     </div>
-    
+
+    <!-- Visualization tab for animated explanation -->
     <div id="visual" class="tab-content">
       <div class="visualization">
         <div id="animationContainer">
-          <!-- Здесь будет анимация -->
+          <!-- Animation will be inserted here dynamically -->
         </div>
         <button onclick="playAnimation()" class="button-primary">Запустить анимацию</button>
       </div>
     </div>
-    
+
+    <!-- Mathematical explanation of RSA -->
     <div id="math" class="tab-content">
       <div class="explanation">
+        <!-- Step-by-step mathematical formulae involved in RSA -->
         <h3>Математические основы RSA:</h3>
         <ol>
           <li>Выбор двух простых чисел: p и q</li>
           <li>Вычисление модуля: n = p × q</li>
           <li>Вычисление функции Эйлера: φ(n) = (p-1)(q-1)</li>
-          <li>Выбор открытой экспоненты e: 1 < e < φ(n), такой что НОД(e, φ(n)) = 1</li>
-          <li>Вычисление закрытой экспоненты d: d × e ≡ 1 (mod φ(n))</li>
+          <li>Выбор открытой экспоненты e...</li>
+          <li>Вычисление закрытой экспоненты d...</li>
           <li>Открытый ключ: (e, n), Закрытый ключ: (d, n)</li>
           <li>Шифрование: C ≡ M^e (mod n)</li>
           <li>Дешифрование: M ≡ C^d (mod n)</li>
@@ -83,20 +87,22 @@
     </div>
   </div>
 
+  <!-- Section for entering input values -->
   <div class="section">
     <h2>1. Ввод начальных значений</h2>
+    <!-- User inputs for prime numbers and exponent -->
     <label>Введите первое простое число (p): <input type="number" id="p" value="7" onchange="checkPrime('p')"></label>
     <div id="pChecker" class="prime-checker">Число должно быть простым!</div><br>
-    
     <label>Введите второе простое число (q): <input type="number" id="q" value="11" onchange="checkPrime('q')"></label>
     <div id="qChecker" class="prime-checker">Число должно быть простым!</div><br>
-    
     <label>Публичная экспонента (e): <input type="number" id="e" value="17" onchange="checkGCD()"></label>
     <div id="eChecker" class="gcd-checker">e должно быть взаимно простым с φ(n)!</div><br>
-    
+
+    <!-- Buttons to generate or reset values -->
     <button onclick="generateKeys()" class="button-primary">Генерировать ключи</button>
     <button onclick="useDefaultValues()" class="button-secondary">Использовать стандартные значения</button>
-    
+
+    <!-- Display for public/private key results -->
     <div class="key-pair">
       <div class="key-box public-key">
         <h3>Открытый ключ 🔓</h3>
@@ -107,10 +113,12 @@
         <div id="privateKey">Еще не сгенерирован</div>
       </div>
     </div>
-    
+
+    <!-- Output for generation status -->
     <div class="output" id="keyOutput"></div>
   </div>
 
+  <!-- Section for encryption input -->
   <div class="section">
     <h2>2. Зашифровать сообщение</h2>
     <label>Введите число (M): <input type="number" id="message" value="27"></label><br>
@@ -119,6 +127,7 @@
     <div id="encryptSteps" class="explanation" style="display: none;"></div>
   </div>
 
+  <!-- Section for decryption input -->
   <div class="section">
     <h2>3. Расшифровать сообщение</h2>
     <label>Зашифрованное число (C): <input type="number" id="cipher" value=""></label><br>
@@ -127,10 +136,12 @@
     <div id="decryptSteps" class="explanation" style="display: none;"></div>
   </div>
 
+  <!-- Section to show calculation steps visually -->
   <div class="section">
     <h2>Пошаговое объяснение вычислений</h2>
     <div class="explanation" id="stepExplanation">
       <div id="steps">
+        <!-- Display each RSA algorithm step in sequence -->
         <div class="step active-step" id="step1"><strong>Шаг 1:</strong> Выбираем два простых числа: p и q</div>
         <div class="step" id="step2"><strong>Шаг 2:</strong> Вычисляем n = p × q</div>
         <div class="step" id="step3"><strong>Шаг 3:</strong> Вычисляем φ(n) = (p - 1)(q - 1)</div>
@@ -145,6 +156,7 @@
     </div>
   </div>
 
+  <!-- Connect external JS file -->
   <script src="main.js"></script>
 </body>
 </html>
