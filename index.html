@@ -1,0 +1,150 @@
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSA Шифрование — Пошаговое обучение</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background: #f7f7f7; color: #333; }
+    h1 { color: #4a90e2; }
+    input, button { padding: 10px; margin: 5px 0; font-size: 1em; }
+    .section { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    .output { font-weight: bold; margin-top: 10px; white-space: pre-wrap; }
+    .explanation { background: #e3f4ff; padding: 15px; border-radius: 10px; margin-top: 10px; }
+    .visualization { margin: 20px 0; text-align: center; }
+    .step { margin: 10px 0; padding: 8px; border-left: 3px solid #4a90e2; }
+    .active-step { background-color: #fffde7; font-weight: bold; }
+    .math { font-family: 'Courier New', monospace; background: #f0f0f0; padding: 2px 5px; border-radius: 3px; }
+    .tabs { display: flex; margin-bottom: 10px; }
+    .tab { padding: 10px 15px; cursor: pointer; border: 1px solid #ddd; border-radius: 5px 5px 0 0; margin-right: 5px; }
+    .tab.active { background-color: #4a90e2; color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    #animationContainer { height: 200px; position: relative; overflow: hidden; margin: 20px 0; }
+    .key, .lock, .message, .cipher { position: absolute; transition: all 1s ease; }
+    .prime-checker { margin-top: 5px; color: #e74c3c; display: none; }
+    .gcd-checker { margin-top: 5px; color: #e74c3c; display: none; }
+    .button-primary { background-color: #4a90e2; color: white; border: none; cursor: pointer; }
+    .button-primary:hover { background-color: #3a80d2; }
+    .button-secondary { background-color: #f0f0f0; border: 1px solid #ddd; cursor: pointer; }
+    .button-secondary:hover { background-color: #e0e0e0; }
+    .key-pair { display: flex; justify-content: space-between; margin: 15px 0; }
+    .key-box { border: 1px solid #ddd; padding: 10px; border-radius: 5px; width: 45%; }
+    .public-key { background-color: #e8f5e9; }
+    .private-key { background-color: #ffebee; }
+  </style>
+</head>
+<body>
+  <h1>🛡️ Интерактивный учебник по RSA шифрованию</h1>
+
+  <div class="section">
+    <h2>Как это работает (очень просто)</h2>
+    <div class="tabs">
+      <div class="tab active" onclick="changeTab('basic')">Простое объяснение</div>
+      <div class="tab" onclick="changeTab('visual')">Визуализация</div>
+      <div class="tab" onclick="changeTab('math')">Математика</div>
+    </div>
+    
+    <div id="basic" class="tab-content active">
+      <div class="explanation">
+        Представь, что ты хочешь отправить секретное число другу, и никто больше не должен его понять. <br>
+        <ul>
+          <li>Ты берешь два <strong>простых числа</strong> (например, 7 и 11). Они как ключи от замка.</li>
+          <li>Ты создаешь <strong>публичный замок</strong> (его можно показывать всем) и <strong>приватный ключ</strong> (держи в тайне!).</li>
+          <li>Когда ты хочешь зашифровать число, ты как бы "закручиваешь замок", используя формулу: <code>C = M^e mod n</code>.</li>
+          <li>Чтобы открыть обратно, твой друг использует <strong>приватный ключ</strong> и формулу: <code>M = C^d mod n</code>.</li>
+        </ul>
+        Это как если бы ты положил игрушку в коробку, закрыл её кодовым замком, и только тот, у кого есть ключ, сможет её достать! 🔐
+      </div>
+    </div>
+    
+    <div id="visual" class="tab-content">
+      <div class="visualization">
+        <div id="animationContainer">
+          <!-- Здесь будет анимация -->
+        </div>
+        <button onclick="playAnimation()" class="button-primary">Запустить анимацию</button>
+      </div>
+    </div>
+    
+    <div id="math" class="tab-content">
+      <div class="explanation">
+        <h3>Математические основы RSA:</h3>
+        <ol>
+          <li>Выбор двух простых чисел: p и q</li>
+          <li>Вычисление модуля: n = p × q</li>
+          <li>Вычисление функции Эйлера: φ(n) = (p-1)(q-1)</li>
+          <li>Выбор открытой экспоненты e: 1 < e < φ(n), такой что НОД(e, φ(n)) = 1</li>
+          <li>Вычисление закрытой экспоненты d: d × e ≡ 1 (mod φ(n))</li>
+          <li>Открытый ключ: (e, n), Закрытый ключ: (d, n)</li>
+          <li>Шифрование: C ≡ M^e (mod n)</li>
+          <li>Дешифрование: M ≡ C^d (mod n)</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>1. Ввод начальных значений</h2>
+    <label>Введите первое простое число (p): <input type="number" id="p" value="7" onchange="checkPrime('p')"></label>
+    <div id="pChecker" class="prime-checker">Число должно быть простым!</div><br>
+    
+    <label>Введите второе простое число (q): <input type="number" id="q" value="11" onchange="checkPrime('q')"></label>
+    <div id="qChecker" class="prime-checker">Число должно быть простым!</div><br>
+    
+    <label>Публичная экспонента (e): <input type="number" id="e" value="17" onchange="checkGCD()"></label>
+    <div id="eChecker" class="gcd-checker">e должно быть взаимно простым с φ(n)!</div><br>
+    
+    <button onclick="generateKeys()" class="button-primary">Генерировать ключи</button>
+    <button onclick="useDefaultValues()" class="button-secondary">Использовать стандартные значения</button>
+    
+    <div class="key-pair">
+      <div class="key-box public-key">
+        <h3>Открытый ключ 🔓</h3>
+        <div id="publicKey">Еще не сгенерирован</div>
+      </div>
+      <div class="key-box private-key">
+        <h3>Закрытый ключ 🔑</h3>
+        <div id="privateKey">Еще не сгенерирован</div>
+      </div>
+    </div>
+    
+    <div class="output" id="keyOutput"></div>
+  </div>
+
+  <div class="section">
+    <h2>2. Зашифровать сообщение</h2>
+    <label>Введите число (M): <input type="number" id="message" value="27"></label><br>
+    <button onclick="encrypt()" class="button-primary">Зашифровать</button>
+    <div class="output" id="encryptOutput"></div>
+    <div id="encryptSteps" class="explanation" style="display: none;"></div>
+  </div>
+
+  <div class="section">
+    <h2>3. Расшифровать сообщение</h2>
+    <label>Зашифрованное число (C): <input type="number" id="cipher" value=""></label><br>
+    <button onclick="decrypt()" class="button-primary">Расшифровать</button>
+    <div class="output" id="decryptOutput"></div>
+    <div id="decryptSteps" class="explanation" style="display: none;"></div>
+  </div>
+
+  <div class="section">
+    <h2>Пошаговое объяснение вычислений</h2>
+    <div class="explanation" id="stepExplanation">
+      <div id="steps">
+        <div class="step active-step" id="step1"><strong>Шаг 1:</strong> Выбираем два простых числа: p и q</div>
+        <div class="step" id="step2"><strong>Шаг 2:</strong> Вычисляем n = p × q</div>
+        <div class="step" id="step3"><strong>Шаг 3:</strong> Вычисляем φ(n) = (p - 1)(q - 1)</div>
+        <div class="step" id="step4"><strong>Шаг 4:</strong> Выбираем e (взаимно просто с φ(n))</div>
+        <div class="step" id="step5"><strong>Шаг 5:</strong> Вычисляем d — такое число, что (d × e) mod φ(n) = 1</div>
+        <div class="step" id="step6"><strong>Шаг 6:</strong> Зашифровка: C = M^e mod n</div>
+        <div class="step" id="step7"><strong>Шаг 7:</strong> Расшифровка: M = C^d mod n</div>
+      </div>
+      <div style="margin-top: 15px;">
+        Все шаги выполняются автоматически. Попробуй сам! 😉
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+</body>
+</html>
